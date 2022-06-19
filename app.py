@@ -12,9 +12,12 @@ from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QTextBrowser
 from PyQt5.QtWidgets import QVBoxLayout
+from PyQt5.QtWidgets import QHBoxLayout
 
 from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QPixmap
 
 
 
@@ -26,7 +29,7 @@ class PyCalcUi(QMainWindow):
         super().__init__()
         # Set some main window's properties
         self.setWindowTitle('Generador de facturas Vincles')
-        self.setFixedSize(500, 500)
+        self.setFixedSize(500, 800)
         # Set the central widget and the general layout
         self.generalLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
@@ -34,139 +37,82 @@ class PyCalcUi(QMainWindow):
         self._centralWidget.setLayout(self.generalLayout)
         # Create the display and the buttons
         self._createDisplay()
-        self._createButtons()
 
     def _createDisplay(self):
-        """Create the display."""
-        # Create the display widget
-        self.display = QLineEdit()
-        # Set some display's properties
-        self.display.setFixedHeight(35)
-        self.display.setAlignment(Qt.AlignRight)
-        self.display.setReadOnly(True)
-        # Add the display to the general layout
-        self.generalLayout.addWidget(self.display)
+        # Database
+        self.database_label = QLabel('Base de datos de clientes', parent=self)
+        self.database_label.setFont(QFont('Arial', 16))
+        self.generalLayout.addWidget(self.database_label)
 
-    def _createButtons(self):
-        """Create the buttons."""
-        self.buttons = {}
-        buttonsLayout = QGridLayout()
-        # Button text | position on the QGridLayout
-        buttons = {'7': (0, 0),
-                   '8': (0, 1),
-                   '9': (0, 2),
-                   '/': (0, 3),
-                   'C': (0, 4),
-                   '4': (1, 0),
-                   '5': (1, 1),
-                   '6': (1, 2),
-                   '*': (1, 3),
-                   '(': (1, 4),
-                   '1': (2, 0),
-                   '2': (2, 1),
-                   '3': (2, 2),
-                   '-': (2, 3),
-                   ')': (2, 4),
-                   '0': (3, 0),
-                   '00': (3, 1),
-                   '.': (3, 2),
-                   '+': (3, 3),
-                   '=': (3, 4),
-                  }
-        # Create the buttons and add them to the grid layout
-        for btnText, pos in buttons.items():
-            self.buttons[btnText] = QPushButton(btnText)
-            self.buttons[btnText].setFixedSize(40, 40)
-            buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1])
-        # Add buttonsLayout to the general layout
-        self.generalLayout.addLayout(buttonsLayout)
+        self.database_file = QLineEdit()
+        self.database_file.setFixedHeight(35)
+        self.database_file.setAlignment(Qt.AlignLeft)
+        self.database_file.setReadOnly(True)
 
+        self.database_button = QPushButton('Seleccionar')
 
-        database_label = QLabel('Base de datos de clientes', parent=self)
-        database_label.setFont(QFont('Arial', 16))
-        self.generalLayout.addWidget(database_label)
+        self.database_layout = QHBoxLayout()
+        self.database_layout.addWidget(self.database_file)
+        self.database_layout.addWidget(self.database_button)
+        self.generalLayout.addLayout(self.database_layout)
 
-        # Create the display widget
-        database_file = QLineEdit()
-        # Set some display's properties
-        database_file.setFixedHeight(35)
-        database_file.setAlignment(Qt.AlignLeft)
-        database_file.setReadOnly(True)
-        # Add the display to the general layout
-        self.generalLayout.addWidget(database_file)
+        # Visits
+        self.visits_label = QLabel('Fichero de visitas', parent=self)
+        self.visits_label.setFont(QFont('Arial', 16))
+        self.generalLayout.addWidget(self.visits_label)
+
+        self.visits_file = QLineEdit()
+        self.visits_file.setFixedHeight(35)
+        self.visits_file.setAlignment(Qt.AlignLeft)
+        self.visits_file.setReadOnly(True)
+
+        self.visits_button = QPushButton('Seleccionar')
+
+        self.visits_layout = QHBoxLayout()
+        self.visits_layout.addWidget(self.visits_file)
+        self.visits_layout.addWidget(self.visits_button)
+        self.generalLayout.addLayout(self.visits_layout)
+
+        # Destination folder
+        self.folder_label = QLabel('Base de datos de clientes', parent=self)
+        self.folder_label.setFont(QFont('Arial', 16))
+        self.generalLayout.addWidget(self.folder_label)
+
+        self.folder_file = QLineEdit()
+        self.folder_file.setFixedHeight(35)
+        self.folder_file.setAlignment(Qt.AlignLeft)
+        self.folder_file.setReadOnly(True)
+
+        self.folder_button = QPushButton('Seleccionar')
+
+        self.folder_layout = QHBoxLayout()
+        self.folder_layout.addWidget(self.folder_file)
+        self.folder_layout.addWidget(self.folder_button)
+        self.generalLayout.addLayout(self.folder_layout)
 
 
+        # Log
+        self.log_browser = QTextBrowser(parent=self)
+        self.generalLayout.addWidget(self.log_browser)
 
 
+        # Generate button
+        self.generate_button = QPushButton('Generar facturas')
+        self.generate_button.setFont(QFont('Arial', 22))
+        self.generalLayout.addWidget(self.generate_button)
+
+
+        # Logo
+        logo_im = QPixmap("template/logo.png")
+        self.logo = QLabel()
+        self.logo.setPixmap(logo_im)
+        self.logo.setScaledContents(True)
+        self.generalLayout.addWidget(self.logo)
 #        file_select = QFileDialog.getOpenFileName(self, 'Open file', '.', '*xls')
 #        self.generalLayout.addWidget(file_select)
 
         #  if filename:
         #      self.inputFileLineEdit.setText(filename)
-
-    def setDisplayText(self, text):
-        """Set display's text."""
-        self.display.setText(text)
-        self.display.setFocus()
-
-    def displayText(self):
-        """Get display's text."""
-        return self.display.text()
-
-    def clearDisplay(self):
-        """Clear the display."""
-        self.setDisplayText('')
-
-ERROR_MSG = 'ERROR'
-
-# Create a Controller class to connect the GUI and the model
-class PyCalcCtrl:
-    """PyCalc Controller class."""
-    def __init__(self, model, view):
-        """Controller initializer."""
-        self._evaluate = model
-        self._view = view
-        # Connect signals and slots
-        self._connectSignals()
-
-    def _buildExpression(self, sub_exp):
-        """Build expression."""
-
-        if self._view.displayText() == ERROR_MSG:
-            self._view.clearDisplay()
-
-        expression = self._view.displayText() + sub_exp
-        self._view.setDisplayText(expression)
-
-
-    def _calculateResult(self):
-        """Evaluate expressions."""
-        result = self._evaluate(expression=self._view.displayText())
-        self._view.setDisplayText(result)
-
-
-    def _connectSignals(self):
-        """Connect signals and slots."""
-        for btnText, btn in self._view.buttons.items():
-            if btnText not in {'=', 'C'}:
-                btn.clicked.connect(partial(self._buildExpression, btnText))
-
-
-        self._view.buttons['='].clicked.connect(self._calculateResult)
-        self._view.display.returnPressed.connect(self._calculateResult)
-        self._view.buttons['C'].clicked.connect(self._view.clearDisplay)
-
-
-# Create a Model to handle the calculator's operation
-def evaluateExpression(expression):
-    """Evaluate an expression."""
-    try:
-        result = str(eval(expression, {}, {}))
-    except Exception:
-        result = ERROR_MSG
-
-    return result
-
 
 
 # Client code
@@ -178,8 +124,6 @@ def main():
     view = PyCalcUi()
     view.show()
     # Create instances of the model and the controller
-    model = evaluateExpression
-    PyCalcCtrl(model=model, view=view)
     # Execute the calculator's main loop
     sys.exit(pycalc.exec_())
 
