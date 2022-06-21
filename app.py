@@ -5,6 +5,7 @@ from functools import partial
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QFileDialog
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QGridLayout
@@ -50,6 +51,9 @@ class PyCalcUi(QMainWindow):
         self.database_file.setReadOnly(True)
 
         self.database_button = QPushButton('Seleccionar')
+        select_database_file = filepath_browser_config(self, 'Base de datos de clientes (*.xls*)',
+                                                'database_file')
+        self.database_button.clicked.connect(select_database_file)
 
         self.database_layout = QHBoxLayout()
         self.database_layout.addWidget(self.database_file)
@@ -67,6 +71,9 @@ class PyCalcUi(QMainWindow):
         self.visits_file.setReadOnly(True)
 
         self.visits_button = QPushButton('Seleccionar')
+        select_visits_file = filepath_browser_config(self, 'Fichero con el historico de visitas (*.xls*)',
+                                                'visits_file')
+        self.visits_button.clicked.connect(select_visits_file)
 
         self.visits_layout = QHBoxLayout()
         self.visits_layout.addWidget(self.visits_file)
@@ -74,7 +81,7 @@ class PyCalcUi(QMainWindow):
         self.generalLayout.addLayout(self.visits_layout)
 
         # Destination folder
-        self.folder_label = QLabel('Base de datos de clientes', parent=self)
+        self.folder_label = QLabel('Carpeta destino', parent=self)
         self.folder_label.setFont(QFont('Arial', 16))
         self.generalLayout.addWidget(self.folder_label)
 
@@ -84,6 +91,9 @@ class PyCalcUi(QMainWindow):
         self.folder_file.setReadOnly(True)
 
         self.folder_button = QPushButton('Seleccionar')
+        select_folder      = path_browser_config(self, 'Carpeta para los resultados',
+                                                'folder_file')
+        self.folder_button.clicked.connect(select_folder)
 
         self.folder_layout = QHBoxLayout()
         self.folder_layout.addWidget(self.folder_file)
@@ -113,6 +123,51 @@ class PyCalcUi(QMainWindow):
 
         #  if filename:
         #      self.inputFileLineEdit.setText(filename)
+
+
+def filepath_browser_config(window, filetype_str, widget_name):
+    """
+    Factory of functions to create a widget to select a file
+    Parameters
+    window (QApplication): Parent window
+    filetype_str (string): Description of the filetype to be selected
+    widget (QtWidgets): Widget to show the filename selected.
+    Returns:
+    function: Function to be connected to the file select button
+    """
+    path = '/home/jmbenlloch/vincles/'
+
+    def file_browser():
+        file_select = QFileDialog.getOpenFileName(window,
+                                        'Open file', path, filetype_str)
+
+        fname = file_select[0]
+        widget = getattr(window, widget_name)
+        widget.setText(fname)
+
+    return file_browser
+
+
+def path_browser_config(window, filetype_str, widget_name):
+    """
+    Factory of functions to create a widget to select a file
+    Parameters
+    window (QApplication): Parent window
+    filetype_str (string): Description of the filetype to be selected
+    widget (QtWidgets): Widget to show the filename selected.
+    Returns:
+    function: Function to be connected to the file select button
+    """
+    path = '/home/jmbenlloch/vincles/'
+
+    def file_browser():
+        file_select = QFileDialog.getExistingDirectory(window,
+                                        'Open file', path)
+
+        widget = getattr(window, widget_name)
+        widget.setText(file_select)
+
+    return file_browser
 
 
 # Client code
