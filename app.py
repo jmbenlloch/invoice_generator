@@ -20,6 +20,8 @@ from PyQt5.QtWidgets import QHBoxLayout
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QPixmap
 
+import process_files
+
 
 
 # Create a subclass of QMainWindow to setup the calculator's GUI
