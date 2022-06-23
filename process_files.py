@@ -10,16 +10,12 @@ from glob import glob
 from zipfile import ZipFile
 
 
-def generate_invoices(visits_file, patients_file, output_folder):
-    df_visits   = pd.read_excel(visits_file)
-    df_patients = pd.read_excel(patients_file)
-    os.makedirs(output_folder, exist_ok=True)
-
-
-
-template_file = 'template/plantilla_factura.tex'
-with open(template_file) as fd:
-    template = fd.read()
+def read_template():
+    # TODO: Read path
+    template_file = 'template/plantilla_factura.tex'
+    with open(template_file) as fd:
+        template = fd.read()
+    return template
 
 
 def replace_params_in_template(template, params):
@@ -56,7 +52,7 @@ def process_patient_visits(dni, df_visits, patient, index):
     padres = patient['Padre/Madre (si menor)']
     nom_factura = padres if isinstance(padres, str) else patient['Nombre']
 
-    visits_parsed = group.sort_values('Fecha').apply(parse_visit, axis=1)
+    visits_parsed = df_visits.sort_values('Fecha').apply(parse_visit, axis=1)
     visits_str = '\n'.join(visits_parsed.values)
 
     n_sessions = df_visits.shape[0]
@@ -78,41 +74,54 @@ def process_patient_visits(dni, df_visits, patient, index):
     return params
 
 
-month, year = extract_month_and_year(df_visits)
-temp_fname  = f'{year}_{month:02}'
+def generate_invoices(visits_file, patients_file, output_folder):
+    # Read data
+    df_visits   = pd.read_excel(visits_file)
+    df_patients = pd.read_excel(patients_file)
+
+    # Create output folder
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Get template
+    template = read_template()
+
+    # Create temp dir for latex
+    month, year = extract_month_and_year(df_visits)
+    temp_fname  = f'{year}_{month:02}'
+    temp_dir = os.path.join(output_folder, 'temp', temp_fname)
+    os.makedirs(temp_dir, exist_ok=True)
+
+    # Copy latex files to temp dir
+    template_files = glob('template/*png')
+    [shutil.copy(fname, temp_dir) for fname in template_files]
 
 
-temp_dir = os.path.join(output_path, 'temp', temp_fname)
-os.makedirs(temp_dir, exist_ok=True)
+    groups = df_visits.groupby('DNI')
+
+    for i, (dni, group) in enumerate(groups):
+        print(dni)
+        patient = df_patients[df_patients['DNI'] == dni].iloc[0] # TODO: Detect if no patient found!
+        params = process_patient_visits(dni, group, patient, i+1)
+        print(params)
+
+        tex_file = replace_params_in_template(template, params)
+        fname = f'{dni}.tex'
+        fileout = os.path.join(temp_dir, fname)
+
+        with open(fileout, 'w') as fd:
+            fd.write(tex_file)
+
+        cmd_result = subprocess.run([f"cd {temp_dir}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
+        if cmd_result.returncode != 0:
+            print(f'Error in file {fileout}')
+        # cmd_result.stdout
 
 
-template_files = glob('template/*png')
-[shutil.copy(fname, temp_dir) for fname in template_files]
+    invoices = glob(os.path.join(temp_dir, '*pdf'))
+
+    with ZipFile('sample.zip', 'w') as fd_zip:
+        for invoice in invoices:
+            fd_zip.write(invoice, os.path.basename(invoice))
 
 
-groups = df_visits.groupby('DNI')
 
-for i, (dni, group) in enumerate(groups):
-    print(dni)
-    patient = df_patients[df_patients['DNI'] == dni].iloc[0] # TODO: Detect if no patient found!
-    params = process_patient_visits(dni, group, patient, i+1)
-    print(params)
-
-    tex_file = replace_params_in_template(template, params)
-    fname = f'{dni}.tex'
-    fileout = os.path.join(temp_dir, fname)
-
-    with open(fileout, 'w') as fd:
-        fd.write(tex_file)
-
-    cmd_result = subprocess.run([f"cd {temp_dir}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
-    if cmd_result.returncode != 0:
-        print(f'Error in file {fileout}')
-    # cmd_result.stdout
-
-
-invoices = glob(os.path.join(temp_dir, '*pdf'))
-
-with ZipFile('sample.zip', 'w') as fd_zip:
-    for invoice in invoices:
-        fd_zip.write(invoice, os.path.basename(invoice))

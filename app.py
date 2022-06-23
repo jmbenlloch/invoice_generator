@@ -112,6 +112,8 @@ class PyCalcUi(QMainWindow):
         self.generate_button = QPushButton('Generar facturas')
         self.generate_button.setFont(QFont('Arial', 22))
         self.generalLayout.addWidget(self.generate_button)
+        self.generate_button.clicked.connect(test_fn(self))
+
 
 
         # Logo
@@ -125,6 +127,15 @@ class PyCalcUi(QMainWindow):
 
         #  if filename:
         #      self.inputFileLineEdit.setText(filename)
+
+def test_fn(window):
+    def fn():
+        print(window.visits_file.text())
+        print(window.database_file.text())
+        print(window.folder_file.text())
+
+        process_files.generate_invoices(window.visits_file.text(), window.database_file.text(), window.folder_file.text())
+    return fn
 
 
 def filepath_browser_config(window, filetype_str, widget_name):
