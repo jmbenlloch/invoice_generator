@@ -1,0 +1,116 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath, setspace} %Cosas de mates y fijar espaciado entre líneas
+\usepackage[utf8]{inputenc} %Permite escribir acentos: á en lugar de \'a etc.
+\usepackage[spanish]{babel}
+%\usepackage[usenames,dvipsnames, table]{xcolor} %Colorines!!
+\usepackage{graphicx} %Cosas chachis de figuras
+\usepackage{pbox} % Para autoajustar el ancho de una celda de texto al contenido
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{marvosym} % €
+
+%			FORMATO
+\oddsidemargin -0em
+\evensidemargin 1em
+\textwidth 6.3in
+\topmargin -1.1in
+\textheight 11in 
+\parindent 3em
+\parskip 1ex
+\headsep 1cm
+\renewcommand{\baselinestretch}{1.25} %para definir el interlineado
+\columnsep=2.5em
+
+\setlength{\parindent}{0pt}
+
+% Table row separation
+\renewcommand{\arraystretch}{1}
+
+% Header
+%\definecolor{titol}{RGB}{70,115,170}
+\setlength\heavyrulewidth{2pt}
+
+
+\begin{document}
+\pagestyle{empty}
+
+\mbox{}
+
+\vspace{-2cm}
+\begin{center}
+	\includegraphics[width=0.65\textwidth]{logo.png}
+\end{center}
+
+
+{\footnotesize
+
+	\noindent
+	\begin{minipage}{0.4\textwidth}
+		VINCLES Atenció Terapèutica SCP\\
+		NIF: J44515559\\
+		Pl. Mar Mediterráneo 3, Entl. 10, 12005,\\
+		Castellón 
+	\end{minipage}
+	\hfill
+	\pbox{0.5\textwidth}{%
+		DATOS CLIENTE:\\
+		Osvaldo Nogués Palacios\\
+		DNI: 33841962S\\
+		Calle de Serafina Llanos 4
+Burgos, 46605
+	}
+
+}
+
+\vspace{1cm}
+
+\noindent
+\textbf{Factura 2022-2-4}
+
+Facturación correspondiente a las visitas terapéuticas realizadas a
+Osvaldo Nogués Palacios %y abonadas por Osvaldo Nogués Palacios
+durante el mes de febrero del año 2022.
+
+
+\begin{center}
+	\begin{tabular}{rp{0.3\textwidth}<{\centering}p{0.3\textwidth}<{\centering}}
+		\toprule
+		&\textbf{Sesión}	&\textbf{Precio} \\
+		\midrule
+		&04/02/2022 &55 \EURtm \\
+&05/02/2022 &76 \EURtm \\
+&05/02/2022 &71 \EURtm \\
+&08/02/2022 &71 \EURtm \\
+&08/02/2022 &73 \EURtm \\
+&09/02/2022 &64 \EURtm \\
+&10/02/2022 &71 \EURtm \\
+&16/02/2022 &58 \EURtm \\
+&18/02/2022 &69 \EURtm \\
+&23/02/2022 &54 \EURtm \\
+&24/02/2022 &56 \EURtm \\
+		\midrule
+		\textbf{TOTAL:}
+		&11 sesiones	&718 \EURtm \\
+		\bottomrule
+	\end{tabular}
+\end{center}
+
+Operación exenta de IVA según el art. 20. Uno.3 de la Ley 37/1992 del 28 de diciembre.
+
+\vspace{0.5cm}
+
+Firmado,
+
+\includegraphics[width=0.3\textwidth]{firma.png}
+
+Elena Trullén Tamarit\\
+Psicóloga y Psicoterapeuta\\
+Coordinadora de VINCLES
+
+\vspace{0.5cm}
+
+\begin{flushright}
+	Castellón, 1 de marzo de 2022
+\end{flushright}
+
+\end{document}
