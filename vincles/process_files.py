@@ -119,7 +119,8 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
         cmd_result = subprocess.run([f"cd {temp_dir}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
         if cmd_result.returncode != 0:
             signals.error.emit(f'Error in file {fileout}')
-        # cmd_result.stdout
+        print(cmd_result.stdout)
+        print(cmd_result.stderr)
 
 
     invoices = glob(os.path.join(temp_dir, '*pdf'))
