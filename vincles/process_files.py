@@ -113,7 +113,7 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
         fname = f'{dni}.tex'
         fileout = os.path.join(temp_dir, fname)
 
-        with open(fileout, 'w') as fd:
+        with open(fileout, 'w', encoding='utf-8') as fd:
             fd.write(tex_file)
 
         cmd_result = subprocess.run([f"cd {temp_dir}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
