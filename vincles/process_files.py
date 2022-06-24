@@ -47,7 +47,8 @@ def process_patient_visits(dni, df_visits, patient, index):
     period_month, period_year = extract_month_and_year(df_visits)
 
     invoice_date = datetime(period_year, period_month, 1) + timedelta(days=40)
-    invoice_number = f'{period_year}/{period_month}/{index}'
+    # TODO  Add sqlite
+    invoice_number = f'{period_year}-{period_month}-{index}'
 
     padres = patient['Padre/Madre (si menor)']
     nom_factura = padres if isinstance(padres, str) else patient['Nombre']
@@ -74,7 +75,7 @@ def process_patient_visits(dni, df_visits, patient, index):
     return params
 
 
-def generate_invoices(visits_file, patients_file, output_folder):
+def generate_invoices(signals, visits_file, patients_file, output_folder):
     # Read data
     df_visits   = pd.read_excel(visits_file)
     df_patients = pd.read_excel(patients_file)
@@ -100,6 +101,10 @@ def generate_invoices(visits_file, patients_file, output_folder):
 
     for i, (dni, group) in enumerate(groups):
         print(dni)
+
+        message = f'Generando factura paciente {dni}'
+        signals.progress.emit(message)
+
         patient = df_patients[df_patients['DNI'] == dni].iloc[0] # TODO: Detect if no patient found!
         params = process_patient_visits(dni, group, patient, i+1)
         print(params)
@@ -113,7 +118,7 @@ def generate_invoices(visits_file, patients_file, output_folder):
 
         cmd_result = subprocess.run([f"cd {temp_dir}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
         if cmd_result.returncode != 0:
-            print(f'Error in file {fileout}')
+            signals.error.emit(f'Error in file {fileout}')
         # cmd_result.stdout
 
 
@@ -122,6 +127,3 @@ def generate_invoices(visits_file, patients_file, output_folder):
     with ZipFile('sample.zip', 'w') as fd_zip:
         for invoice in invoices:
             fd_zip.write(invoice, os.path.basename(invoice))
-
-
-

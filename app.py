@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QFileDialog
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore    import QThreadPool
 from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QPushButton
@@ -19,9 +20,10 @@ from PyQt5.QtWidgets import QHBoxLayout
 
 from PyQt5.QtGui import QFont
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QColor
 
-import process_files
-
+from vincles.worker import Worker
+from datetime import datetime
 
 
 # Create a subclass of QMainWindow to setup the calculator's GUI
@@ -40,6 +42,11 @@ class PyCalcUi(QMainWindow):
         self._centralWidget.setLayout(self.generalLayout)
         # Create the display and the buttons
         self._createDisplay()
+
+        # QT thread pool
+        self.threadpool = QThreadPool()
+        self.threadpool.setMaxThreadCount(1)
+
 
     def _createDisplay(self):
         # Database
@@ -115,18 +122,13 @@ class PyCalcUi(QMainWindow):
         self.generate_button.clicked.connect(test_fn(self))
 
 
-
         # Logo
         logo_im = QPixmap("template/logo.png")
         self.logo = QLabel()
         self.logo.setPixmap(logo_im)
         self.logo.setScaledContents(True)
         self.generalLayout.addWidget(self.logo)
-#        file_select = QFileDialog.getOpenFileName(self, 'Open file', '.', '*xls')
-#        self.generalLayout.addWidget(file_select)
 
-        #  if filename:
-        #      self.inputFileLineEdit.setText(filename)
 
 def test_fn(window):
     def fn():
@@ -134,7 +136,13 @@ def test_fn(window):
         print(window.database_file.text())
         print(window.folder_file.text())
 
-        process_files.generate_invoices(window.visits_file.text(), window.database_file.text(), window.folder_file.text())
+
+        worker = Worker(visits=window.visits_file.text(),
+                        patients=window.database_file.text(),
+                        output=window.folder_file.text())
+        worker.signals.progress.connect(update_log(window))
+        window.threadpool.start(worker)
+
     return fn
 
 
@@ -181,6 +189,23 @@ def path_browser_config(window, filetype_str, widget_name):
         widget.setText(file_select)
 
     return file_browser
+
+
+def update_log(window, error=False):
+    def fn(status):
+        date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        message = f'{date} - {status}'
+
+        color = QColor(0, 0, 0)
+        if error:
+            color = QColor(255, 0, 0)
+        window.log_browser.setTextColor(color)
+
+        window.log_browser.append(f'{date} - {status}')
+        # set scroll to the end
+        scrollbar = window.log_browser.verticalScrollBar()
+        scrollbar.setValue(scrollbar.maximum())
+    return fn
 
 
 # Client code
