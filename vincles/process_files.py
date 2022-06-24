@@ -48,7 +48,7 @@ def process_patient_visits(dni, df_visits, patient, index):
 
     invoice_date = datetime(period_year, period_month, 1) + timedelta(days=40)
     # TODO  Add sqlite
-    invoice_number = f'{period_year}-{period_month}-{index}'
+    invoice_number = f'{period_year}-{period_month:02}-{index:03}'
 
     padres = patient['Padre/Madre (si menor)']
     nom_factura = padres if isinstance(padres, str) else patient['Nombre']
