@@ -141,7 +141,8 @@ def test_fn(window):
                         patients=window.database_file.text(),
                         output=window.folder_file.text())
         worker.signals.progress.connect(update_log(window))
-        worker.signals.error.connect(update_log(window, error=True))
+        worker.signals.error   .connect(update_log(window, error=True))
+        worker.signals.result  .connect(update_log(window))
         window.threadpool.start(worker)
 
     return fn

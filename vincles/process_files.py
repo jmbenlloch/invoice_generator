@@ -59,18 +59,18 @@ def process_patient_visits(dni, df_visits, patient, index):
     n_sessions = df_visits.shape[0]
     sessions = 'sesiones' if n_sessions > 1 else 'sesión'
 
-    params = {'NOMFACTURA' : nom_factura,
-              'DNI' : dni,
-              'DIRECCIO' : patient['Direccion'],
-              'NUMEROFACTURA' : invoice_number,
-              'NOMPACIENT' : patient['Nombre'],
-              'MES' : month_to_spanish_name(period_month),
-              'ANY' : period_year,
-              'VISITS' : visits_str,
+    params = {'NOMFACTURA'     : nom_factura,
+              'DNI'            : dni,
+              'DIRECCIO'       : patient['Direccion'],
+              'NUMEROFACTURA'  : invoice_number,
+              'NOMPACIENT'     : patient['Nombre'],
+              'MES'            : month_to_spanish_name(period_month),
+              'ANY'            : period_year,
+              'VISITS'         : visits_str,
               'NUMEROSESSIONS' : f'{n_sessions} {sessions}',
-              'PREUTOTAL' : df_visits['Euros'].sum(),
-              'MES2' : month_to_spanish_name(invoice_date.month),
-              'ANY2' : invoice_date.year}
+              'PREUTOTAL'      : df_visits['Euros'].sum(),
+              'MES2'           : month_to_spanish_name(invoice_date.month),
+              'ANY2'           : invoice_date.year}
 
     return params
 
@@ -124,7 +124,10 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
 
 
     invoices = glob(os.path.join(temp_dir, '*pdf'))
+    zip_fname = os.path.join(output_folder, temp_fname + '.zip')
 
-    with ZipFile('sample.zip', 'w') as fd_zip:
+    with ZipFile(zip_fname, 'w') as fd_zip:
+        message = f'Generando fichero zip {zip_fname}'
+        signals.progress.emit(message)
         for invoice in invoices:
             fd_zip.write(invoice, os.path.basename(invoice))
