@@ -13,7 +13,7 @@ from zipfile import ZipFile
 def read_template():
     # TODO: Read path
     template_file = 'template/plantilla_factura.tex'
-    with open(template_file) as fd:
+    with open(template_file, encoding='utf-8')) as fd:
         template = fd.read()
     return template
 
