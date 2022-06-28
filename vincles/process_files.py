@@ -122,8 +122,9 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
         with open(fileout, 'w', encoding='utf-8') as fd:
             fd.write(tex_file)
 
-        print(temp_dir.replace('/', '\\'))
-        cmd_result = subprocess.run([f"cd {temp_dir}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
+        temp_dir_shell .replace('/', '\\')) # for windows...
+        print(temp_dir_shell)
+        cmd_result = subprocess.run([f"cd {temp_dir_shell}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
         if cmd_result.returncode != 0:
             signals.error.emit(f'Error in file {fileout}')
         print(cmd_result.stdout)
