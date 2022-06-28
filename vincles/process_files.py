@@ -11,7 +11,6 @@ from zipfile import ZipFile
 
 
 def read_template():
-    # TODO: Read path
     template_file = os.path.join(os.environ['VINCLES'],
                                  'template/plantilla_factura.tex')
     with open(template_file, encoding='utf-8') as fd:
@@ -106,7 +105,13 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
         message = f'Generando factura paciente {dni}'
         signals.progress.emit(message)
 
-        patient = df_patients[df_patients['DNI'] == dni].iloc[0] # TODO: Detect if no patient found!
+        try:
+            patient = df_patients[df_patients['DNI'] == dni].iloc[0] # TODO: Detect if no patient found!
+        except IndexError:
+            message = f'ERROR: Paciente con {dni} no encontrado'
+            signals.error.emit(message)
+            continue
+
         params = process_patient_visits(dni, group, patient, i+1)
         print(params)
 
