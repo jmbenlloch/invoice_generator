@@ -106,7 +106,7 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
         signals.progress.emit(message)
 
         try:
-            patient = df_patients[df_patients['DNI'] == dni].iloc[0] # TODO: Detect if no patient found!
+            patient = df_patients[df_patients['DNI'] == dni].iloc[0]
         except IndexError:
             message = f'ERROR: Paciente con {dni} no encontrado'
             signals.error.emit(message)
@@ -122,7 +122,7 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
         with open(fileout, 'w', encoding='utf-8') as fd:
             fd.write(tex_file)
 
-        print(temp_dir)
+        print(temp_dir.replace('/', '\\'))
         cmd_result = subprocess.run([f"cd {temp_dir}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
         if cmd_result.returncode != 0:
             signals.error.emit(f'Error in file {fileout}')
