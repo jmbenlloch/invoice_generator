@@ -11,8 +11,6 @@ from enum       import Enum, auto
 
 from vincles import process_files
 
-# https://www.learnpyqt.com/tutorials/multithreading-pyqt-applications-qthreadpool/
-
 
 class WorkerSignals(QObject):
     '''
@@ -85,9 +83,3 @@ class Worker(QRunnable):
             self.signals.result.emit('Procesamiento completado')
         finally:
             self.signals.finished.emit()  # Done
-
-
-def print_run_number(window, signals):
-    run_number = get_run_number()
-    run_config = f"{run_number}"
-    signals.progress.emit(run_config + '\n')

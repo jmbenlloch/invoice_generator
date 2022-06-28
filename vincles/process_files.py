@@ -12,7 +12,8 @@ from zipfile import ZipFile
 
 def read_template():
     # TODO: Read path
-    template_file = 'template/plantilla_factura.tex'
+    template_file = os.path.join(os.environ['VINCLES'],
+                                 'template/plantilla_factura.tex')
     with open(template_file, encoding='utf-8') as fd:
         template = fd.read()
     return template
@@ -93,9 +94,9 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
     os.makedirs(temp_dir, exist_ok=True)
 
     # Copy latex files to temp dir
-    template_files = glob('template/*png')
+    template_files_path = os.path.join(os.environ['VINCLES'], 'template/*png')
+    template_files      = glob(template_files_path)
     [shutil.copy(fname, temp_dir) for fname in template_files]
-
 
     groups = df_visits.groupby('DNI')
 
@@ -116,6 +117,7 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
         with open(fileout, 'w', encoding='utf-8') as fd:
             fd.write(tex_file)
 
+        print(temp_dir)
         cmd_result = subprocess.run([f"cd {temp_dir}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
         if cmd_result.returncode != 0:
             signals.error.emit(f'Error in file {fileout}')

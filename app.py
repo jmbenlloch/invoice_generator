@@ -25,6 +25,7 @@ from PyQt5.QtGui import QColor
 from vincles.worker import Worker
 from datetime import datetime
 
+import os
 
 # Create a subclass of QMainWindow to setup the calculator's GUI
 class PyCalcUi(QMainWindow):
@@ -123,7 +124,8 @@ class PyCalcUi(QMainWindow):
 
 
         # Logo
-        logo_im = QPixmap("template/logo.png")
+        logo_path = os.path.join(os.environ['VINCLES'], 'template/logo.png')
+        logo_im = QPixmap(logo_path)
         self.logo = QLabel()
         self.logo.setPixmap(logo_im)
         self.logo.setScaledContents(True)
