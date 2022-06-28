@@ -124,7 +124,7 @@ class PyCalcUi(QMainWindow):
 
 
         # Logo
-        logo_path = os.path.join(os.environ['VINCLES'], 'template/logo.png')
+        logo_path = os.path.join(os.environ['VINCLES'], 'template/logo_app.png')
         logo_im = QPixmap(logo_path)
         self.logo = QLabel()
         self.logo.setPixmap(logo_im)
@@ -217,7 +217,7 @@ def main():
     """Main function."""
     # Create an instance of QApplication
     pycalc = QApplication(sys.argv)
-    # Show the calculator's GUI
+    # Show the GUI
     view = PyCalcUi()
     view.show()
     # Create instances of the model and the controller
