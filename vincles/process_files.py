@@ -124,8 +124,9 @@ def generate_invoices(signals, visits_file, patients_file, output_folder):
 
         temp_dir_shell = temp_dir.replace('/', '\\') # for windows...
         print(temp_dir_shell)
-        print(f"cd {temp_dir_shell}; pdflatex {fname}")
-        cmd_result = subprocess.run([f"cd {temp_dir_shell}; pdflatex {fname}"], capture_output=True, text=True, shell=True)
+        print(f"cd {temp_dir_shell} & pdflatex {fname}")
+        #cmd_result = subprocess.run([f'C:\Program Files\MiKTeX\miktex\bin\x64\pdflatex', 'f{fname}'], cwd=temp_dir_shell, capture_output=True, text=True, shell=True)
+        cmd_result = subprocess.run([f'cmd.exe' , f'/c pdflatex {fname}', ], cwd=temp_dir_shell, capture_output=True, text=True)
         if cmd_result.returncode != 0:
             signals.error.emit(f'Error in file {fileout}')
         print(cmd_result.stdout)
