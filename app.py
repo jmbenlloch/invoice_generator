@@ -1,14 +1,10 @@
-import sys
-from functools import partial
+from vincles.worker  import Worker
 
-# Import QApplication and the required widgets from PyQt5.QtWidgets
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QFileDialog
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtCore    import QThreadPool
 from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QPushButton
@@ -18,18 +14,23 @@ from PyQt5.QtWidgets import QTextBrowser
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QHBoxLayout
 
-from PyQt5.QtGui import QFont
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui     import QFont
+from PyQt5.QtGui     import QPixmap
+from PyQt5.QtGui     import QColor
 
-from vincles.worker import Worker
-from datetime import datetime
+from PyQt5.QtCore    import Qt
+from PyQt5.QtCore    import QThreadPool
 
+from functools import partial
+from datetime  import datetime
+
+import sys
 import os
 
-# Create a subclass of QMainWindow to setup the calculator's GUI
-class PyCalcUi(QMainWindow):
-    """PyCalc's View (GUI)."""
+
+# Create a subclass of QMainWindow to setup the GUI
+class InvoiceGeneratorGUI(QMainWindow):
+    """InvoiceGeneratorGUI View (GUI)."""
     def __init__(self):
         """View initializer."""
         super().__init__()
@@ -37,7 +38,7 @@ class PyCalcUi(QMainWindow):
         self.setWindowTitle('Generador de facturas Vincles')
         self.setFixedSize(500, 800)
         # Set the central widget and the general layout
-        self.generalLayout = QVBoxLayout()
+        self.generalLayout  = QVBoxLayout()
         self._centralWidget = QWidget(self)
         self.setCentralWidget(self._centralWidget)
         self._centralWidget.setLayout(self.generalLayout)
@@ -120,7 +121,7 @@ class PyCalcUi(QMainWindow):
         self.generate_button = QPushButton('Generar facturas')
         self.generate_button.setFont(QFont('Arial', 22))
         self.generalLayout.addWidget(self.generate_button)
-        self.generate_button.clicked.connect(test_fn(self))
+        self.generate_button.clicked.connect(worker_launcher(self))
 
 
         # Logo
@@ -132,16 +133,16 @@ class PyCalcUi(QMainWindow):
         self.generalLayout.addWidget(self.logo)
 
 
-def test_fn(window):
+def worker_launcher(window):
     def fn():
         print(window.visits_file.text())
         print(window.database_file.text())
         print(window.folder_file.text())
 
 
-        worker = Worker(visits=window.visits_file.text(),
-                        patients=window.database_file.text(),
-                        output=window.folder_file.text())
+        worker = Worker(visits   = window.visits_file.text(),
+                        patients = window.database_file.text(),
+                        output   = window.folder_file.text())
         worker.signals.progress.connect(update_log(window))
         worker.signals.error   .connect(update_log(window, error=True))
         worker.signals.result  .connect(update_log(window))
@@ -216,13 +217,13 @@ def update_log(window, error=False):
 def main():
     """Main function."""
     # Create an instance of QApplication
-    pycalc = QApplication(sys.argv)
+    py_gui = QApplication(sys.argv)
     # Show the GUI
-    view = PyCalcUi()
+    view = InvoiceGeneratorGUI()
     view.show()
     # Create instances of the model and the controller
     # Execute the calculator's main loop
-    sys.exit(pycalc.exec_())
+    sys.exit(py_gui.exec_())
 
 if __name__ == '__main__':
     main()
